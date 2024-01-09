@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node out/process.js"
   },
-  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^8.39.0"
+    "@types/node": "^20.10.8",
+    "eslint": "^8.39.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
   }
 }
