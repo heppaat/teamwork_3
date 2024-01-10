@@ -11,10 +11,22 @@ const movieDB = {
 //write you code after this line
 type Professional = { id: number; name: string; roles: string[] };
 
+type Movie = {
+  title: string;
+  year: number;
+  runtime?: number;
+  genres: string[];
+  "release-date": string;
+  writers: string[] | number[];
+  actors: string[] | number[];
+  storyline?: string;
+  directors: string[] | number[];
+};
+
 type MovieDB = {
   professionals: Professional[];
-  movies: [];
-  genres: [];
+  movies: Movie[];
+  genres: string[];
 };
 
 const movieSchema = z.object({
@@ -34,6 +46,8 @@ const movieSchema = z.object({
 });
 
 type MainData = z.infer<typeof movieSchema>;
+
+//task 1
 
 const singularize = (str: string) => str.slice(0, -1);
 
@@ -72,6 +86,28 @@ const addProfessionals = (
   }
 };
 
+//task 2
+
+const idReplacement = (
+  moviesArray: Movie[],
+  professionalsArray: Professional[],
+  type: "actors" | "writers" | "directors"
+) => {
+  for (let i = 0; i < moviesArray.length; i++) {
+    const movie = moviesArray[i];
+    for (let j = 0; j < movie[type].length; j++) {
+      const name: string | number = movie[type][j].trim();
+
+      for (let k = 0; k < professionalsArray.length; k++) {
+        if (professionalsArray[k].name === name) {
+          movie[type][j] = professionalsArray[k].id;
+          break;
+        }
+      }
+    }
+  }
+};
+
 const readData = async () => {
   try {
     const input = await fs.readFile(`${__dirname}/../data.json`, "utf-8");
@@ -85,13 +121,27 @@ const readData = async () => {
     addProfessionals(validatedData, movieDB.professionals, "writers");
     addProfessionals(validatedData, movieDB.professionals, "actors");
     addProfessionals(validatedData, movieDB.professionals, "directors");
-    console.log(movieDB.professionals);
+
+    movieDB.movies = [...validatedData.movies];
+    return movieDB;
   } catch (error) {
     console.log(error);
   }
 };
 
-readData();
+const main = async () => {
+  const result = await readData();
+
+  if (result) {
+    idReplacement(result.movies, result.professionals, "writers");
+    idReplacement(result.movies, result.professionals, "actors");
+    idReplacement(result.movies, result.professionals, "directors");
+
+    console.log(result.movies);
+  }
+};
+main();
+
 //write your code before this line
 
 export { movieDB };
